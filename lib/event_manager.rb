@@ -57,8 +57,18 @@ def time_targeting(times)
         hour[regs] += 1
         hour
     end
-   p times_hash.sort_by {|k, v| v}.reverse
-   p times_hash.max_by{ |k, v| v}[0]
+   p times_hash.sort_by { |k, v| v }.reverse
+   p times_hash.max_by{ |k, v| v }[0]
+end
+
+def day_of_the_week_targeting(days)
+    days_hash = days.reduce(Hash.new(0)) do |day, regs|
+        day[regs] += 1
+        day
+    end
+    days_hash.sort_by { |k, v| v }.reverse
+    busiest_day = days_hash.max_by{ |k, v| v }[0]
+    p Date::DAYNAMES[busiest_day]
 end
 
 puts 'EventManager Initialized!'
@@ -72,6 +82,7 @@ contents = CSV.open(
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 times =[]
+days = []
 contents.each do |row|
     id = row[0]
     name = row[:first_name]
@@ -79,17 +90,21 @@ contents.each do |row|
     regdate = row[:regdate]
 
     zipcode = clean_zipcode(row[:zipcode])
-    clean_phone_numbers(phone_num)
+    clean_phone_numbers(phone)
 
     legislators = legislators_by_zipcode(zipcode)
     
     form_letter = erb_template.result(binding)
 
     save_thank_you_letter(id, form_letter)
-    
+
     time = Time.strptime("#{regdate}", "%m/%d/%Y %k:%M").hour
     times.push(time)
+    
+    day = Time.strptime("#{regdate}", "%m/%d/%Y %k:%M").wday
+    days.push(day)
    
 end
 
-time_targeting(times)
+
+
