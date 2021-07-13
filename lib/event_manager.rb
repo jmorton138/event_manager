@@ -57,8 +57,9 @@ def time_targeting(times)
         hour[regs] += 1
         hour
     end
-   p times_hash.sort_by { |k, v| v }.reverse
-   p times_hash.max_by{ |k, v| v }[0]
+   times_hash.sort_by { |k, v| v }.reverse
+   busiest_hour = times_hash.max_by{ |k, v| v }[0]
+   p busiest_hour
 end
 
 def day_of_the_week_targeting(days)
@@ -68,7 +69,7 @@ def day_of_the_week_targeting(days)
     end
     days_hash.sort_by { |k, v| v }.reverse
     busiest_day = days_hash.max_by{ |k, v| v }[0]
-    p Date::DAYNAMES[busiest_day]
+    Date::DAYNAMES[busiest_day]
 end
 
 puts 'EventManager Initialized!'
@@ -107,4 +108,5 @@ contents.each do |row|
 end
 
 
-
+puts "The busiest sign up time was #{time_targeting(times)} o'clock"
+puts "The busiest sign up day was #{day_of_the_week_targeting(days)}"
