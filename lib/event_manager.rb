@@ -33,6 +33,23 @@ def save_thank_you_letter(id, form_letter)
     end
 end
 
+def clean_phone_numbers(phone_num)
+    #remove non-digits from string
+    phone_num = phone_num.gsub(/\D/, '')
+    if phone_num.length == 10
+        phone_num
+    elsif phone_num.length == 11 && phone_num[0] == 1
+        phone_num = phone_num[1..10]
+    elsif phone_num.length == 11 && phone_num[0] != 1
+        phone_num = "Invalid phone number"
+    elsif phone_num.length > 11
+        phone_num = "Invalid phone number"
+    else 
+        phone_num = "Invalid phone number"
+    end
+
+end
+
 puts 'EventManager Initialized!'
 
 contents = CSV.open(
@@ -47,7 +64,7 @@ erb_template = ERB.new template_letter
 contents.each do |row|
     id = row[0]
     name = row[:first_name]
-
+    phone = row[:homephone]
     zipcode = clean_zipcode(row[:zipcode])
 
     legislators = legislators_by_zipcode(zipcode)
@@ -56,5 +73,6 @@ contents.each do |row|
 
     save_thank_you_letter(id, form_letter)
 
+   
 end
 
