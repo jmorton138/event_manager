@@ -1,6 +1,8 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'time'
+
 
 
 
@@ -50,6 +52,15 @@ def clean_phone_numbers(phone_num)
 
 end
 
+def time_targeting(times)
+    times_hash = times.reduce(Hash.new(0)) do |hour, regs|
+        hour[regs] += 1
+        hour
+    end
+   p times_hash.sort_by {|k, v| v}.reverse
+   p times_hash.max_by{ |k, v| v}[0]
+end
+
 puts 'EventManager Initialized!'
 
 contents = CSV.open(
@@ -60,19 +71,25 @@ contents = CSV.open(
 
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
-
+times =[]
 contents.each do |row|
     id = row[0]
     name = row[:first_name]
     phone = row[:homephone]
+    regdate = row[:regdate]
+
     zipcode = clean_zipcode(row[:zipcode])
+    clean_phone_numbers(phone_num)
 
     legislators = legislators_by_zipcode(zipcode)
     
     form_letter = erb_template.result(binding)
 
     save_thank_you_letter(id, form_letter)
-
+    
+    time = Time.strptime("#{regdate}", "%m/%d/%Y %k:%M").hour
+    times.push(time)
    
 end
 
+time_targeting(times)
